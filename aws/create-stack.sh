@@ -7,7 +7,10 @@ STACK_NAME=${1:-"CoreOS-test-$RANDOM"}
 STACK_DISCOVERY_URL=${2:-`curl -s https://discovery.etcd.io/new`}
 STACK_INSTANCE_TYPE=${3:-m3.medium}
 STACK_CLUSTER_SIZE=${4:-3}
-STACK_KEY_PAIR=${5:-coreos-beta}
+STACK_KEY_PAIR=${5:-coreoscluster01}
+
+aws ec2 describe-key-pairs --key-names $STACK_KEY_PAIR > /dev/null 2>&1 || \
+  echo "Keypair $STACK_KEY_PAIR does not exit." && exit 1
 
 echo "Creating CloudFormation Stack with these parameters:"
 echo "Name: $STACK_NAME"
