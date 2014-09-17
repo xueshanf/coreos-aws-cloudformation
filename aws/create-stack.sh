@@ -1,11 +1,11 @@
 #!/bin/bash
 
-command -v aws >/dev/null 2>&1 || echo >&2 "aws cli it's not installed.  Aborting." && exit 1
+which aws > /dev/null 2>&1 || { echo "aws cli it's not installed.  Aborting."; exit 1; }
 
 # Default values
 SCRIPT_PATH=$( cd $(dirname $0) ; pwd -P )
 STACK_NAME="CoreOS-test-$RANDOM"
-STACK_DISCOVERY_URL=${`curl -s https://discovery.etcd.io/new`}
+STACK_DISCOVERY_URL=`curl -s https://discovery.etcd.io/new`
 STACK_INSTANCE_TYPE="m3.medium"
 STACK_CLUSTER_SIZE=3
 STACK_KEY_PAIR="coreoscluster01"
@@ -48,8 +48,7 @@ do
     esac
 done
 
-aws ec2 describe-key-pairs --key-names $STACK_KEY_PAIR > /dev/null 2>&1 || \
-  echo "Keypair $STACK_KEY_PAIR does not exit." && exit 1
+aws ec2 describe-key-pairs --key-names $STACK_KEY_PAIR > /dev/null 2>&1 || { echo "Keypair $STACK_KEY_PAIR does not exit."; exit 1; }
 
 echo "Creating CloudFormation Stack with these parameters:"
 echo "Name: $STACK_NAME"
@@ -57,7 +56,7 @@ echo "Discovery URL: $STACK_DISCOVERY_URL"
 echo "Instance Type x Cluster Size: $STACK_INSTANCE_TYPE x $STACK_CLUSTER_SIZE"
 echo "EC2 Key Pair: $STACK_KEY_PAIR"
 
-[ $dryrun -eq 1 ] && exit 0
+[ $dryrun -eq 1 ] && { echo "Dryrun only."; exit 0; }
 
 aws cloudformation create-stack \
   --region $STACK_REGION \
