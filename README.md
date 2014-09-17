@@ -40,8 +40,10 @@ ssh -i coreoscluster01.pem core@ec2-54-214-201-163.us-west-2.compute.amazonaws.c
 ```
 * Remote access in to a machine
 
+```bash
 export FLEETCTL_TUNNEL={resolvable address of one of your cloud instances}
 coreos/list_units.sh
+```
 
 ## Access cluster 
 You can test some changes to your cloud without needing to destroy and re-create. SCP your file to a host and:
