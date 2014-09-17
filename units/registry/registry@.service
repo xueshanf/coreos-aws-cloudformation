@@ -1,4 +1,4 @@
-t]
+[Unit]
 Description=Private Docker Registry
 After=docker.service
 Requires=docker.service
