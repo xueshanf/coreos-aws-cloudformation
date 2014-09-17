@@ -1,16 +1,22 @@
 #!/bin/bash
 
 if [ -z "$FLEETCTL_TUNNEL" ]; then
-    echo
-    echo "You must set FLEETCTL_TUNNEL (a resolvable address to one of your CoreOS instances)"
-    echo "e.g.:"
-    echo "export FLEETCTL_TUNNEL=1.2.3.4"
-    echo
-    exit 1
+    answer='N'
+    echo -n "Are you on one of the cluster machines? [Y/N]"
+    read answer
+    echo ""
+    if [ "X$answer" = "XY" ]; then
+        echo "Continue."
+    else 
+        echo "You must set FLEETCTL_TUNNEL (a resolvable address to one of your CoreOS instances)"
+        echo "e.g.:"
+        echo "export FLEETCTL_TUNNEL=1.2.3.4"
+        exit 1
+    fi
 fi
 
 SCRIPT_PATH=$( cd $(dirname $0) ; pwd -P )
-cd $SCRIPT_PATH/..
+cd $SCRIPT_PATH/../units
 
 # Add the service templates to Fleet
 fleetctl submit registry/registry@.service
