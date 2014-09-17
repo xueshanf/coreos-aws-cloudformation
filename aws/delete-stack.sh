@@ -9,4 +9,4 @@ echo "Deleting  CloudFormation Stack with these parameters:"
 echo "Name: $STACK_NAME"
 
 # Validate stack's existence
-aws cloudformation describe-stacks --stack-name $STACK_NAME && aws cloudformation delete-stack  --stack-name $STACK_NAME
+aws cloudformation describe-stacks --stack-name $STACK_NAME > /dev/null && aws cloudformation delete-stack  --stack-name $STACK_NAME

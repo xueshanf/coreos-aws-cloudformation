@@ -1,19 +1,19 @@
-# This project's structure and scripts are based on the work by:
+##  This project's structure and scripts are based on the work by:
 
     https://github.com/emmanuel/coreos-skydns-cloudformation
 
-# The cluster runs on AWS EC2 using Cloud Formation. cloud-init includes:
+## The cluster runs on AWS EC2 using Cloud Formation. cloud-init includes:
 
 * etcd
 * fleet
 
-# Fleet is then used to deploy:
+## Fleet is then used to deploy:
 
 * registry
 
-# Requirements
+## Requirements
 
-* install aws client
+* Install aws-cli client
 * aws client needs to be configured with an AWS credential.
 
 ```bash
@@ -23,17 +23,33 @@ aws configure
 * Get AWS ssh private key for the 'coreoscluster01' keypair in s3, and then `ssh-add` it. Alternatively, generate your own key pair and upload it to our AWS account 
 (you'll need to refer to this key in the create_stack command below).
 
-Wait a few minutes, then get a public hostname or ip from one of your new instances from the AWS console. Then set:
-
+## Manage Stacks
 ```bash
-export FLEETCTL_TUNNEL={resolvable address of one of your cloud instances}
-coreos/launch_units.sh
+aws/create-stack.sh
+aws/describe-stack.sh stackname
+aws/update-stack.sh stackname
+aws/delete-stack.sh stackname
 ```
+## Access cluster 
 
-# Handy hints
+Get a public hostname or ip from one of your new instances from the AWS console (todo: with aws cli command line instructions)
 
+* Login to a machine
+```bash
+ssh -i coreoscluster01.pem core@ec2-54-214-201-163.us-west-2.compute.amazonaws.com
+```
+* Remote access in to a machine
+
+export FLEETCTL_TUNNEL={resolvable address of one of your cloud instances}
+coreos/list_units.sh
+
+## Access cluster 
 You can test some changes to your cloud without needing to destroy and re-create. SCP your file to a host and:
 
 ``` bash
 sudo /usr/bin/coreos-cloudinit --from-file /tmp/user-data.yml
+```
+## Tear down
+```bash
+aws/delete-stack.sh stackname
 ```
