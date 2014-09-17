@@ -10,6 +10,7 @@ STACK_INSTANCE_TYPE="m3.medium"
 STACK_CLUSTER_SIZE=3
 STACK_KEY_PAIR="coreoscluster01"
 STACK_REGION="us-west-2"
+STACK_SSHFROM=`curl -s ipecho.net/plain`
 
 dryrun=0
 
@@ -55,6 +56,7 @@ echo "Name: $STACK_NAME"
 echo "Discovery URL: $STACK_DISCOVERY_URL"
 echo "Instance Type x Cluster Size: $STACK_INSTANCE_TYPE x $STACK_CLUSTER_SIZE"
 echo "EC2 Key Pair: $STACK_KEY_PAIR"
+echo "SSH From: $STACK_SSHFROM/32" \
 
 [ $dryrun -eq 1 ] && { echo "Dryrun only."; exit 0; }
 
@@ -67,5 +69,5 @@ aws cloudformation create-stack \
     "ParameterKey=ClusterSize,ParameterValue=$STACK_CLUSTER_SIZE,UsePreviousValue=false" \
     "ParameterKey=DiscoveryURL,ParameterValue=$STACK_DISCOVERY_URL,UsePreviousValue=false" \
     "ParameterKey=AdvertisedIPAddress,ParameterValue=private,UsePreviousValue=false" \
-    "ParameterKey=AllowSSHFrom,ParameterValue=0.0.0.0/0,UsePreviousValue=false" \
+    "ParameterKey=AllowSSHFrom,ParameterValue=$STACK_SSHFROM,UsePreviousValue=false" \
     "ParameterKey=KeyPair,ParameterValue=$STACK_KEY_PAIR,UsePreviousValue=false"

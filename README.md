@@ -34,14 +34,17 @@ aws/delete-stack.sh stackname
 
 Get a public hostname or ip from one of your new instances from the AWS console (todo: with aws cli command line instructions)
 
+By Default, the SSH is only allowed from the IP address that you provisioned the stack. If you use a different machine, go to 
+the cosole to change the security group rules for port 22. Group name looks like <stack-name>-CoreOSSecurityGroup-.
+
 * Login to a machine
 ```bash
-ssh -i coreoscluster01.pem core@ec2-54-214-201-163.us-west-2.compute.amazonaws.com
+ssh -i <key>.pem core@ec2-54-214-201-163.us-west-2.compute.amazonaws.com
 ```
 * Remote access in to a machine
 
 ```bash
-export FLEETCTL_TUNNEL={resolvable address of one of your cloud instances}
+export FLEETCTL_TUNNEL={resolvable address of one of the cloud instances}
 coreos/list_units.sh
 ```
 
