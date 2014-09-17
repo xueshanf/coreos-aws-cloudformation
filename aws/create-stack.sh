@@ -1,13 +1,52 @@
 #!/bin/bash
 
-# From https://github.com/emmanuel/coreos-skydns-cloudformation
-SCRIPT_PATH=$( cd $(dirname $0) ; pwd -P )
+command -v aws >/dev/null 2>&1 || echo >&2 "aws cli it's not installed.  Aborting." && exit 1
 
-STACK_NAME=${1:-"CoreOS-test-$RANDOM"}
-STACK_DISCOVERY_URL=${2:-`curl -s https://discovery.etcd.io/new`}
-STACK_INSTANCE_TYPE=${3:-m3.medium}
-STACK_CLUSTER_SIZE=${4:-3}
-STACK_KEY_PAIR=${5:-coreoscluster01}
+# Default values
+SCRIPT_PATH=$( cd $(dirname $0) ; pwd -P )
+STACK_NAME="CoreOS-test-$RANDOM"
+STACK_DISCOVERY_URL=${`curl -s https://discovery.etcd.io/new`}
+STACK_INSTANCE_TYPE="m3.medium"
+STACK_CLUSTER_SIZE=3
+STACK_KEY_PAIR="coreoscluster01"
+STACK_REGION="us-west-2"
+
+dryrun=0
+
+help(){
+    echo "create-stack [-s <stack-name>] -k <keypair-name> -t <discovery-toten-url> -r region -t <ec2-type> -n <ec2-number> -d "
+}
+
+while getopts "s:k:t:r:n:dh" OPTION
+do
+    case $OPTION in
+        s)
+          STACK_NAME==$OPTARG
+          ;;
+        k)
+          STACK_KEY_PAIR=$OPTARG
+          ;;
+        t)
+          STACK_INSTANCE_TYPE=$OPTARG
+          ;;
+        t)
+          STACK_DISCOVERY_URL=$OPTARG
+          ;;
+        r)
+          STACK_REGION=$OPTARG
+          ;;
+        n)
+          STACK_CLUSTER_SIZE=$OPTARG
+          ;;
+        d)
+          dryrun=1
+          ;;
+        [h?])
+          help
+          exit
+          ;;
+    esac
+done
 
 aws ec2 describe-key-pairs --key-names $STACK_KEY_PAIR > /dev/null 2>&1 || \
   echo "Keypair $STACK_KEY_PAIR does not exit." && exit 1
@@ -18,7 +57,10 @@ echo "Discovery URL: $STACK_DISCOVERY_URL"
 echo "Instance Type x Cluster Size: $STACK_INSTANCE_TYPE x $STACK_CLUSTER_SIZE"
 echo "EC2 Key Pair: $STACK_KEY_PAIR"
 
+[ $dryrun -eq 1 ] && exit 0
+
 aws cloudformation create-stack \
+  --region $STACK_REGION \
   --stack-name $STACK_NAME \
   --template-body file://$SCRIPT_PATH/cloudformation-template.json \
   --parameters \
